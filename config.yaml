@@ -1,0 +1,44 @@
+filter:
+  include_keywords:
+    high_priority:    # +3点
+      - データ分析
+      - ダッシュボード
+      - BI
+      - データ可視化
+      - DX推進
+    medium_priority:  # +2点
+      - 統計調査
+      - 集計
+      - アンケート
+      - 効果検証
+      - データ基盤
+    low_priority:     # +1点
+      - 調査業務
+      - 報告書作成
+      - 業務委託
+      - コンサルティング
+
+  exclude_keywords:
+    - 工事
+    - 建設
+    - 設計監理
+    - 測量
+    - 清掃
+    - 給食
+    - 医療機器
+    - 道路
+    - 橋梁
+    - 上下水道
+    - 警備
+    - 印刷
+
+  notify_threshold: 2
+
+notification:
+  slack_webhook_url: ""  # Slack Incoming Webhook URL をここに設定
+
+scraper:
+  request_interval: 3    # 同一ドメインへのリクエスト間隔（秒）
+  timeout: 30            # リクエストタイムアウト（秒）
+  max_retries: 3         # リトライ回数
+  user_agent: "MunicipalBidScraper/1.0"

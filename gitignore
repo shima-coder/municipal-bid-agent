@@ -1,0 +1,7 @@
+data/bids.db
+logs/
+export/
+.env
+__pycache__/
+*.pyc
+.DS_Store
