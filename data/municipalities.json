@@ -1,0 +1,827 @@
+[
+  {
+    "code": "365011",
+    "name": "勝浦町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 4500,
+    "urls": {
+      "top": "https://www.town.katsuura.lg.jp/",
+      "bid_page": "https://www.town.katsuura.lg.jp/category/zokusei/nyusatsu/",
+      "news_page": "https://www.town.katsuura.lg.jp/top.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "365029",
+    "name": "上勝町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 1300,
+    "urls": {
+      "top": "http://www.kamikatsu.jp/",
+      "bid_page": "http://www.kamikatsu.jp/category/zokusei/nyusatsu/",
+      "news_page": "http://www.kamikatsu.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "HTTPSではなくHTTP。SSL証明書エラーの可能性あり。独自ドメイン使用。"
+  },
+  {
+    "code": "365037",
+    "name": "佐那河内村",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 2100,
+    "urls": {
+      "top": "https://www.vill.sanagochi.lg.jp/",
+      "bid_page": "https://www.vill.sanagochi.lg.jp/category/gyosei/nyusatsu/",
+      "news_page": "https://www.vill.sanagochi.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "徳島県唯一の村"
+  },
+  {
+    "code": "365045",
+    "name": "石井町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 24400,
+    "urls": {
+      "top": "https://www.town.ishii.lg.jp/",
+      "bid_page": "https://www.town.ishii.lg.jp/categories/bunya/nyusatsu/",
+      "news_page": "https://www.town.ishii.lg.jp/docs/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "プロポーザル案件の掲載実績あり"
+  },
+  {
+    "code": "365053",
+    "name": "神山町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 4600,
+    "urls": {
+      "top": "https://www.town.kamiyama.lg.jp/",
+      "bid_page": "https://www.town.kamiyama.lg.jp/office/soumu/kanzai/bid.html",
+      "news_page": "https://www.town.kamiyama.lg.jp/office/info/index.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "IT企業誘致で有名。DX関連案件の可能性あり。"
+  },
+  {
+    "code": "368016",
+    "name": "那賀町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 6900,
+    "urls": {
+      "top": "https://www.town.tokushima-naka.lg.jp/",
+      "bid_page": "https://www.town.tokushima-naka.lg.jp/gyosei/shigoto-sangyo/nyusatsu-keiyaku/index.html",
+      "news_page": "https://www.town.tokushima-naka.lg.jp/gyosei/index.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "383015",
+    "name": "牟岐町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 3400,
+    "urls": {
+      "top": "https://www.town.tokushima-mugi.lg.jp/",
+      "bid_page": "https://www.town.tokushima-mugi.lg.jp/category/zokusei/nyusatsu/",
+      "news_page": "https://www.town.tokushima-mugi.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "383023",
+    "name": "美波町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 5700,
+    "urls": {
+      "top": "https://www.town.minami.lg.jp/",
+      "bid_page": "https://www.town.minami.lg.jp/sangyo/nyusatsu/",
+      "news_page": "https://www.town.minami.lg.jp/oshirase/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "サテライトオフィス誘致実績あり"
+  },
+  {
+    "code": "383031",
+    "name": "海陽町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 8100,
+    "urls": {
+      "top": "https://www.town.kaiyo.lg.jp/",
+      "bid_page": "https://www.town.kaiyo.lg.jp/category/bunya/gyosei/nyusatsu/",
+      "news_page": "https://www.town.kaiyo.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "プロポーザル案件の掲載実績あり"
+  },
+  {
+    "code": "384011",
+    "name": "松茂町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 14300,
+    "urls": {
+      "top": "https://www.town.matsushige.tokushima.jp/",
+      "bid_page": "https://www.town.matsushige.tokushima.jp/category/bunya/gyosei_machizukuri/nyusatsu/",
+      "news_page": "https://www.town.matsushige.tokushima.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "URL形式が他と異なる(tokushima.jp)"
+  },
+  {
+    "code": "384029",
+    "name": "北島町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 23600,
+    "urls": {
+      "top": "https://www.town.kitajima.lg.jp/",
+      "bid_page": "https://www.town.kitajima.lg.jp/sangyo/nyusatsu/",
+      "news_page": "https://www.town.kitajima.lg.jp/all-tab/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "384037",
+    "name": "藍住町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 35300,
+    "urls": {
+      "top": "https://www.town.aizumi.lg.jp/",
+      "bid_page": "https://www.town.aizumi.lg.jp/category/zokusei/tender/",
+      "news_page": "https://www.town.aizumi.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "徳島県最大の町"
+  },
+  {
+    "code": "384045",
+    "name": "板野町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 12800,
+    "urls": {
+      "top": "http://www.town.itano.tokushima.jp/",
+      "bid_page": "http://www.town.itano.tokushima.jp/bunya/nyusatsu/",
+      "news_page": "http://www.town.itano.tokushima.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "HTTPSではなくHTTP。URL形式が他と異なる(tokushima.jp)。"
+  },
+  {
+    "code": "384053",
+    "name": "上板町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 11100,
+    "urls": {
+      "top": "https://www.townkamiita.jp/",
+      "bid_page": "https://www.townkamiita.jp/category/zokusei/nyusatsu/",
+      "news_page": "https://www.townkamiita.jp/docs/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "独自ドメイン(townkamiita.jp)使用。lg.jpではない。"
+  },
+  {
+    "code": "384682",
+    "name": "つるぎ町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 7300,
+    "urls": {
+      "top": "https://www.town.tokushima-tsurugi.lg.jp/",
+      "bid_page": "https://www.town.tokushima-tsurugi.lg.jp/sangyo/nyusatsu/",
+      "news_page": "https://www.town.tokushima-tsurugi.lg.jp/oshirase/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "384895",
+    "name": "東みよし町",
+    "prefecture": "徳島県",
+    "region": "四国",
+    "population": 13100,
+    "urls": {
+      "top": "https://www.town.higashimiyoshi.lg.jp/",
+      "bid_page": "https://www.town.higashimiyoshi.lg.jp/sangyo/nyusatsu/",
+      "news_page": "https://www.town.higashimiyoshi.lg.jp/oshirase/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "373222",
+    "name": "土庄町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 12700,
+    "urls": {
+      "top": "https://www.town.tonosho.kagawa.jp/",
+      "bid_page": "https://www.town.tonosho.kagawa.jp/gyosei/sangyo/nyusatsu/index.html",
+      "news_page": "https://www.town.tonosho.kagawa.jp/gyosei/index.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "373249",
+    "name": "小豆島町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 13300,
+    "urls": {
+      "top": "https://www.town.shodoshima.lg.jp/",
+      "bid_page": "https://www.town.shodoshima.lg.jp/gyousei/sangyo/5/index.html",
+      "news_page": "https://www.town.shodoshima.lg.jp/news_list.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "374041",
+    "name": "三木町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 27000,
+    "urls": {
+      "top": "https://www.town.miki.lg.jp/",
+      "bid_page": "https://www.town.miki.lg.jp/life/list.php?hdnSKBN=B&hdnCat=115&hdnJPN=",
+      "news_page": "https://www.town.miki.lg.jp/news/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "376418",
+    "name": "直島町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 3000,
+    "urls": {
+      "top": "https://www.town.naoshima.lg.jp/",
+      "bid_page": "https://www.town.naoshima.lg.jp/torikumi/nyusatsu/post_5.html",
+      "news_page": "https://www.town.naoshima.lg.jp/index.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "小規模自治体のため案件数は少ない"
+  },
+  {
+    "code": "378615",
+    "name": "宇多津町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 18300,
+    "urls": {
+      "top": "https://www.town.utazu.lg.jp/",
+      "bid_page": "https://www.town.utazu.lg.jp/life/6/21/",
+      "news_page": "https://www.town.utazu.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "プロポーザル案件の実績あり"
+  },
+  {
+    "code": "378658",
+    "name": "綾川町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 23000,
+    "urls": {
+      "top": "https://www.town.ayagawa.lg.jp/",
+      "bid_page": "https://www.town.ayagawa.lg.jp/category/bunya/gyosei/nyusatsu/",
+      "news_page": "https://www.town.ayagawa.lg.jp/top.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "378712",
+    "name": "琴平町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 8300,
+    "urls": {
+      "top": "https://www.town.kotohira.kagawa.jp/",
+      "bid_page": "https://www.town.kotohira.kagawa.jp/life/2/16/",
+      "news_page": "https://www.town.kotohira.kagawa.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "378721",
+    "name": "多度津町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 22000,
+    "urls": {
+      "top": "https://www.town.tadotsu.kagawa.jp/",
+      "bid_page": "https://www.town.tadotsu.kagawa.jp/shigoto_sangyo/nyusatsu_keiyaku/index.html",
+      "news_page": "https://www.town.tadotsu.kagawa.jp/index.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "378747",
+    "name": "まんのう町",
+    "prefecture": "香川県",
+    "region": "四国",
+    "population": 17600,
+    "urls": {
+      "top": "https://www.town.manno.lg.jp/",
+      "bid_page": "https://www.town.manno.lg.jp/life/5/32/",
+      "news_page": "https://www.town.manno.lg.jp/soshiki/list1-1.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "プロポーザル案件の実績あり"
+  },
+  {
+    "code": "382019",
+    "name": "松前町",
+    "prefecture": "愛媛県",
+    "region": "四国",
+    "population": 30000,
+    "urls": {
+      "top": "https://www.town.masaki.ehime.jp/",
+      "bid_page": "https://www.town.masaki.ehime.jp/life/2/17/",
+      "news_page": "https://www.town.masaki.ehime.jp/soshiki/list8-1.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "382027",
+    "name": "砥部町",
+    "prefecture": "愛媛県",
+    "region": "四国",
+    "population": 20000,
+    "urls": {
+      "top": "https://www.town.tobe.ehime.jp/",
+      "bid_page": "https://www.town.tobe.ehime.jp/shigoto_sangyo/nyusatsu_keiyaku/index.html",
+      "news_page": "https://www.town.tobe.ehime.jp/news.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "JS動的生成の可能性あり"
+  },
+  {
+    "code": "383864",
+    "name": "内子町",
+    "prefecture": "愛媛県",
+    "region": "四国",
+    "population": 15000,
+    "urls": {
+      "top": "https://www.town.uchiko.ehime.jp/",
+      "bid_page": "https://www.town.uchiko.ehime.jp/life/13/34/",
+      "news_page": "https://www.town.uchiko.ehime.jp/soshiki/list1-1.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "384224",
+    "name": "伊方町",
+    "prefecture": "愛媛県",
+    "region": "四国",
+    "population": 7600,
+    "urls": {
+      "top": "https://www.town.ikata.ehime.jp/",
+      "bid_page": "https://www.town.ikata.ehime.jp/site/nyusatsu/",
+      "news_page": "https://www.town.ikata.ehime.jp/soshiki/list1-1.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "384844",
+    "name": "松野町",
+    "prefecture": "愛媛県",
+    "region": "四国",
+    "population": 3500,
+    "urls": {
+      "top": "https://www.town.matsuno.ehime.jp/",
+      "bid_page": "https://www.town.matsuno.ehime.jp/site/nyuusatsu/",
+      "news_page": "https://www.town.matsuno.ehime.jp/soshiki/list1-1.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "384887",
+    "name": "鬼北町",
+    "prefecture": "愛媛県",
+    "region": "四国",
+    "population": 9100,
+    "urls": {
+      "top": "https://www.town.kihoku.ehime.jp/",
+      "bid_page": "https://www.town.kihoku.ehime.jp/life/sub/4/31/23/",
+      "news_page": "https://www.town.kihoku.ehime.jp/soshiki/list1-1.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "385069",
+    "name": "愛南町",
+    "prefecture": "愛媛県",
+    "region": "四国",
+    "population": 17000,
+    "urls": {
+      "top": "https://www.town.ainan.ehime.jp/",
+      "bid_page": "https://www.town.ainan.ehime.jp/kurashi/business/nyusatsu/",
+      "news_page": "https://www.town.ainan.ehime.jp/kurashi/news-list.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "393011",
+    "name": "東洋町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 2000,
+    "urls": {
+      "top": "http://www.town.toyo.kochi.jp/",
+      "bid_page": null,
+      "news_page": "http://www.town.toyo.kochi.jp/contents/category.php"
+    },
+    "page_type": "unknown",
+    "active": false,
+    "notes": "入札専用ページが見つからない。HTTPのみ。"
+  },
+  {
+    "code": "393029",
+    "name": "奈半利町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 2800,
+    "urls": {
+      "top": "https://www.town.nahari.kochi.jp/",
+      "bid_page": "https://www.town.nahari.kochi.jp/life/list.php?hdnSKBN=B&hdnKeyword=%E5%85%A5%E6%9C%AD&hdnJPN=%E6%97%A5%E6%9C%AC%E8%AA%9E",
+      "news_page": "https://www.town.nahari.kochi.jp/index2.php"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "393037",
+    "name": "田野町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 2400,
+    "urls": {
+      "top": "https://tanocho.jp/",
+      "bid_page": "https://tanocho.jp/life/list.php?hdnCat=500",
+      "news_page": "https://tanocho.jp/kakuka/soumu"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "四国一小さな町。独自ドメイン使用。"
+  },
+  {
+    "code": "393045",
+    "name": "安田町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 2200,
+    "urls": {
+      "top": "https://www.town.yasuda.kochi.jp/",
+      "bid_page": "https://www.town.yasuda.kochi.jp/life/list.php?hdnSKBN=B&hdnKeyword=%E5%85%A5%E6%9C%AD%E3%83%BB%E5%A5%91%E7%B4%84&hdnJPN=%E6%97%A5%E6%9C%AC%E8%AA%9E",
+      "news_page": "https://www.town.yasuda.kochi.jp/index2.php"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "393053",
+    "name": "北川村",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 1200,
+    "urls": {
+      "top": "https://www.kitagawamura.jp/",
+      "bid_page": null,
+      "news_page": "http://www.kitagawamura.jp/life/new.php"
+    },
+    "page_type": "html_list",
+    "active": false,
+    "notes": "入札専用ページが見つからない。独自ドメイン使用。"
+  },
+  {
+    "code": "393061",
+    "name": "馬路村",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 750,
+    "urls": {
+      "top": "https://vill.umaji.lg.jp/",
+      "bid_page": "https://vill.umaji.lg.jp/about/administrative/131/",
+      "news_page": "https://vill.umaji.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "人口約750人の小規模村"
+  },
+  {
+    "code": "393088",
+    "name": "芸西村",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 3600,
+    "urls": {
+      "top": "https://www.vill.geisei.kochi.jp/",
+      "bid_page": "https://www.vill.geisei.kochi.jp/a02b09.php",
+      "news_page": "https://www.vill.geisei.kochi.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "プロポーザル案件の実績あり"
+  },
+  {
+    "code": "393410",
+    "name": "本山町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 3100,
+    "urls": {
+      "top": "https://www.town.motoyama.kochi.jp/",
+      "bid_page": "https://www.town.motoyama.kochi.jp/shigoto_sangyo/nyusatsu_keiyaku/index.html",
+      "news_page": "https://www.town.motoyama.kochi.jp/newslist.html"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "393444",
+    "name": "大豊町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 2900,
+    "urls": {
+      "top": "https://www.town.otoyo.kochi.jp/",
+      "bid_page": "https://www.town.otoyo.kochi.jp/life/list.php?hdnSKBN=C&hdnZoku=1010",
+      "news_page": "https://www.town.otoyo.kochi.jp/index2.php"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "393631",
+    "name": "土佐町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 3500,
+    "urls": {
+      "top": "http://www.town.tosa.kochi.jp/",
+      "bid_page": "http://www.town.tosa.kochi.jp/publics/index/209/",
+      "news_page": "http://www.town.tosa.kochi.jp/publics/index/337/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "公式サイトはHTTP。SSL証明書問題の可能性あり。"
+  },
+  {
+    "code": "393649",
+    "name": "大川村",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 350,
+    "urls": {
+      "top": "https://www.vill.okawa.kochi.jp/",
+      "bid_page": null,
+      "news_page": "https://www.vill.okawa.kochi.jp/"
+    },
+    "page_type": "unknown",
+    "active": false,
+    "notes": "日本一人口が少ない自治体(離島除く)。入札専用ページが見つからない。"
+  },
+  {
+    "code": "393860",
+    "name": "いの町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 20700,
+    "urls": {
+      "top": "https://www.town.ino.kochi.jp/",
+      "bid_page": "https://www.town.ino.kochi.jp/shigoto/nyusatu/",
+      "news_page": "https://www.town.ino.kochi.jp/news/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "入札・契約ページが充実。人口2万超で規模が大きい。"
+  },
+  {
+    "code": "393878",
+    "name": "仁淀川町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 4400,
+    "urls": {
+      "top": "https://www.town.niyodogawa.lg.jp/",
+      "bid_page": "https://www.town.niyodogawa.lg.jp/nyusatsu/",
+      "news_page": "https://www.town.niyodogawa.lg.jp/news/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "394017",
+    "name": "中土佐町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 5700,
+    "urls": {
+      "top": "https://www.town.nakatosa.lg.jp/",
+      "bid_page": "https://www.town.nakatosa.lg.jp/life/list.php?hdnSKBN=B&hdnKeyword=%E5%85%A5%E6%9C%AD%E6%83%85%E5%A0%B1&routekbn=A",
+      "news_page": "https://www.town.nakatosa.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "394025",
+    "name": "佐川町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 11700,
+    "urls": {
+      "top": "https://www.town.sakawa.lg.jp/",
+      "bid_page": "https://www.town.sakawa.lg.jp/offer/",
+      "news_page": "https://www.town.sakawa.lg.jp/life/news.php"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "394033",
+    "name": "越知町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 4800,
+    "urls": {
+      "top": "https://www.town.ochi.kochi.jp/",
+      "bid_page": "https://www.town.ochi.kochi.jp/category/29",
+      "news_page": "https://www.town.ochi.kochi.jp/topics"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "394050",
+    "name": "梼原町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 3100,
+    "urls": {
+      "top": "https://www.town.yusuhara.lg.jp/",
+      "bid_page": "http://www.town.yusuhara.kochi.jp/town/kakuka/soumu/entry-2100.html",
+      "news_page": "https://www.town.yusuhara.lg.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "新旧2つのドメインあり。入札情報は旧ドメイン側。"
+  },
+  {
+    "code": "394106",
+    "name": "日高村",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 4700,
+    "urls": {
+      "top": "https://www.vill.hidaka.kochi.jp/",
+      "bid_page": "https://www.vill.hidaka.kochi.jp/kurashi/child_category_page.cgi?RANK=3&CATEGORY_ID=2&CATEGORY_ID2=3&CATEGORY_ID3=1",
+      "news_page": "https://www.vill.hidaka.kochi.jp/kurashi/category_page.cgi?CATEGORY_ID=2"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "独自CMS利用"
+  },
+  {
+    "code": "394114",
+    "name": "津野町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 5100,
+    "urls": {
+      "top": "https://town.kochi-tsuno.lg.jp/",
+      "bid_page": "https://town.kochi-tsuno.lg.jp/kurashi/info_nyusatu",
+      "news_page": "https://town.kochi-tsuno.lg.jp/kurashi/info"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "394122",
+    "name": "四万十町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 14800,
+    "urls": {
+      "top": "https://www.town.shimanto.lg.jp/",
+      "bid_page": "https://www.town.shimanto.lg.jp/nyusatsu/",
+      "news_page": "https://www.town.shimanto.lg.jp/news/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "入札情報ページが充実"
+  },
+  {
+    "code": "394246",
+    "name": "大月町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 4300,
+    "urls": {
+      "top": "https://www.town.otsuki.kochi.jp/",
+      "bid_page": "https://www.town.otsuki.kochi.jp/life/list.php?hdnSKBN=B&hdnKeyword=%E5%85%A5%E6%9C%AD",
+      "news_page": "https://www.town.otsuki.kochi.jp/index2.php"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  },
+  {
+    "code": "394271",
+    "name": "三原村",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 1300,
+    "urls": {
+      "top": "https://www.vill.mihara.kochi.jp/",
+      "bid_page": "https://www.vill.mihara.kochi.jp/life/detail.php?hdnKey=165",
+      "news_page": "https://www.vill.mihara.kochi.jp/"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": "小規模村のため案件は少ない可能性"
+  },
+  {
+    "code": "394289",
+    "name": "黒潮町",
+    "prefecture": "高知県",
+    "region": "四国",
+    "population": 9800,
+    "urls": {
+      "top": "https://www.town.kuroshio.lg.jp/",
+      "bid_page": "https://www.town.kuroshio.lg.jp/sosiki/soumu/jigyousha/nyuusatu.html",
+      "news_page": "https://www.town.kuroshio.lg.jp/pb/cont/1346"
+    },
+    "page_type": "html_list",
+    "active": true,
+    "notes": ""
+  }
+]

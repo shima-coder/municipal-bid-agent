@@ -3,7 +3,7 @@ filter:
     high_priority:    # +3点
       - データ分析
       - ダッシュボード
-      - BI
+      - BIツール
       - データ可視化
       - DX推進
     medium_priority:  # +2点
