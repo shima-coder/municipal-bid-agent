@@ -17,6 +17,7 @@ from db.store import (
 )
 from filter.matcher import BidMatcher
 from judge.llm import BidJudge
+from judge.tools import JudgeToolExecutor
 from notify.slack import SlackNotifier
 from scraper.base import load_config
 from scraper.municipal import MunicipalScraper
@@ -207,16 +208,34 @@ def run(args, config):
         notify_targets = matcher.apply_to_new_bids(conn, new_bids)
         logger.info(f"新規案件: {len(new_bids)}件, 通知対象: {len(notify_targets)}件")
 
-    # 4. AIエージェントによる応募可否判定（LLM判定）
+    # 4. AIエージェントによる応募可否判定（LLM + tool use）
     judge = BidJudge(config)
     if judge.is_configured and not args.dry_run:
-        logger.info("--- AI応募可否判定開始 ---")
-        judged_targets = judge.judge_batch(notify_targets)
+        logger.info("--- AIエージェント応募可否判定開始 ---")
+        # ツール実行用のセッション (HTTP fetch) と DB conn を渡す
+        http_session = None
+        if judge.use_tools:
+            scraper_for_session = (
+                municipal_scraper if not args.kkj_only else None
+            )
+            if scraper_for_session is not None:
+                http_session = scraper_for_session.session
+            else:
+                # スクレイパーが居ない場合は最小限のrequests.Sessionを作る
+                import requests
+                http_session = requests.Session()
+                http_session.headers.update(
+                    {'User-Agent': config.get('scraper', {}).get('user_agent', 'MunicipalBidAgent/1.0')}
+                )
+        executor = JudgeToolExecutor(http_session=http_session, db_conn=conn)
+        judged_targets = judge.judge_batch(notify_targets, executor=executor)
         apply_count = sum(1 for *_, j in judged_targets if j.verdict == 'apply')
         skip_count = sum(1 for *_, j in judged_targets if j.verdict == 'skip')
+        total_tool_calls = sum(j.tool_calls for *_, j in judged_targets if j is not None)
         logger.info(
             f"AI判定完了: 応募推奨={apply_count}, スキップ推奨={skip_count}, "
-            f"その他={len(judged_targets) - apply_count - skip_count}"
+            f"その他={len(judged_targets) - apply_count - skip_count}, "
+            f"ツール呼び出し総数={total_tool_calls}"
         )
     else:
         if not judge.is_configured:

@@ -44,7 +44,9 @@ scraper:
   user_agent: "MunicipalBidScraper/1.0"
 
 llm:
-  enabled: false                              # true にすると LLM 判定が有効化（要 ANTHROPIC_API_KEY）
-  model: "claude-haiku-4-5-20251001"          # 判定に使うモデル（Haikuで十分）
-  max_judgments_per_run: 10                   # 1回の実行でLLM判定する案件数の上限（コスト制御）
+  enabled: false                       # true にすると LLM 判定が有効化（要 ANTHROPIC_API_KEY）
+  model: "claude-haiku-4-5"            # 判定に使うモデル（Haikuで十分。alias使用、date suffix不要）
+  use_tools: true                      # true: agentic ループ (詳細fetch + 過去案件検索)、false: 1回のみ
+  max_judgments_per_run: 10            # 1回の実行でLLM判定する案件数の上限（コスト制御）
+  max_tool_iterations: 4               # use_tools=true 時、ツール使用ループの最大回数
   max_tokens: 1024
