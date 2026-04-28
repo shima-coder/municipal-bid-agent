@@ -16,6 +16,7 @@ from db.store import (
     update_bid_notified,
 )
 from filter.matcher import BidMatcher
+from judge.llm import BidJudge
 from notify.slack import SlackNotifier
 from scraper.base import load_config
 from scraper.municipal import MunicipalScraper
@@ -206,14 +207,30 @@ def run(args, config):
         notify_targets = matcher.apply_to_new_bids(conn, new_bids)
         logger.info(f"新規案件: {len(new_bids)}件, 通知対象: {len(notify_targets)}件")
 
-    # 4. 通知
+    # 4. AIエージェントによる応募可否判定（LLM判定）
+    judge = BidJudge(config)
+    if judge.is_configured and not args.dry_run:
+        logger.info("--- AI応募可否判定開始 ---")
+        judged_targets = judge.judge_batch(notify_targets)
+        apply_count = sum(1 for *_, j in judged_targets if j.verdict == 'apply')
+        skip_count = sum(1 for *_, j in judged_targets if j.verdict == 'skip')
+        logger.info(
+            f"AI判定完了: 応募推奨={apply_count}, スキップ推奨={skip_count}, "
+            f"その他={len(judged_targets) - apply_count - skip_count}"
+        )
+    else:
+        if not judge.is_configured:
+            logger.info("AI判定: 未設定のためスキップ")
+        judged_targets = [(b, s, m, None) for b, s, m in notify_targets]
+
+    # 5. 通知
     if not args.scrape_only and not args.dry_run:
         logger.info("--- 通知開始 ---")
         notifier = SlackNotifier(config)
 
         # 個別案件通知
-        for bid_dict, score, matched in notify_targets:
-            notifier.notify_bid(bid_dict, score, matched)
+        for bid_dict, score, matched, judgment in judged_targets:
+            notifier.notify_bid(bid_dict, score, matched, judgment)
             update_bid_notified(conn, bid_dict['id'])
 
         # 日次サマリ通知

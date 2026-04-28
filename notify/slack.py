@@ -18,6 +18,13 @@ BID_TYPE_LABELS = {
     'unknown': '不明',
 }
 
+# AI判定 verdict の表示名
+VERDICT_LABELS = {
+    'apply': '✅ 応募推奨',
+    'skip': '❌ スキップ推奨',
+    'uncertain': '❔ 要確認',
+}
+
 
 class SlackNotifier:
     """Slack Incoming Webhookで通知を送信する"""
@@ -33,7 +40,7 @@ class SlackNotifier:
         """Slack webhook URLが設定されているか"""
         return bool(self.webhook_url)
 
-    def format_bid_message(self, bid, score, matched_keywords):
+    def format_bid_message(self, bid, score, matched_keywords, judgment=None):
         """個別案件の通知メッセージを生成する。
 
         Args:
@@ -41,6 +48,7 @@ class SlackNotifier:
                  published_date, bid_type, url, matched_keywords
             score: int
             matched_keywords: list[str]
+            judgment: BidJudgment (optional) — LLM judgement to attach
 
         Returns:
             str: formatted message
@@ -63,6 +71,20 @@ class SlackNotifier:
             f"🔑 キーワード: {keywords_str}",
             f"🔗 {url}",
         ]
+
+        if judgment is not None and not judgment.is_empty:
+            verdict_label = VERDICT_LABELS.get(judgment.verdict, '❔')
+            lines.append("")
+            lines.append(
+                f"🤖 AI判定: {verdict_label}（信頼度 {judgment.confidence}%）"
+            )
+            if judgment.reason:
+                lines.append(f"   理由: {judgment.reason}")
+            if judgment.estimated_effort and judgment.estimated_effort != '不明':
+                lines.append(f"   想定工数: {judgment.estimated_effort}")
+            if judgment.concerns:
+                lines.append(f"   懸念: {' / '.join(judgment.concerns)}")
+
         return '\n'.join(lines)
 
     def format_summary_message(self, stats):
@@ -127,9 +149,9 @@ class SlackNotifier:
             logger.error(f"Slack notification error: {e}")
             return False
 
-    def notify_bid(self, bid, score, matched_keywords):
+    def notify_bid(self, bid, score, matched_keywords, judgment=None):
         """個別案件を通知する"""
-        message = self.format_bid_message(bid, score, matched_keywords)
+        message = self.format_bid_message(bid, score, matched_keywords, judgment)
         return self.send(message)
 
     def notify_summary(self, stats):

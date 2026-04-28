@@ -42,3 +42,9 @@ scraper:
   timeout: 30            # リクエストタイムアウト（秒）
   max_retries: 3         # リトライ回数
   user_agent: "MunicipalBidScraper/1.0"
+
+llm:
+  enabled: false                              # true にすると LLM 判定が有効化（要 ANTHROPIC_API_KEY）
+  model: "claude-haiku-4-5-20251001"          # 判定に使うモデル（Haikuで十分）
+  max_judgments_per_run: 10                   # 1回の実行でLLM判定する案件数の上限（コスト制御）
+  max_tokens: 1024
