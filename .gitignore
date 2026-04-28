@@ -2,6 +2,9 @@ data/bids.db
 logs/
 export/
 .env
+.venv/
 __pycache__/
 *.pyc
 .DS_Store
+nohup.out
+.pytest_cache/
