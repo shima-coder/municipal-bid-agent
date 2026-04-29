@@ -37,6 +37,11 @@ filter:
 notification:
   slack_webhook_url: ""  # Slack Incoming Webhook URL をここに設定
 
+  # AI判定が skip かつ信頼度がこの値以上の案件は個別通知をスキップ (サマリには件数として含める)
+  # 0 = 抑制なし、100 = 完全に skip 判定の通知を出さない
+  # null や未設定で「抑制機能無効 (=従来通り全件通知)」
+  suppress_skip_above_confidence: 70
+
 scraper:
   request_interval: 3    # 同一ドメインへのリクエスト間隔（秒）
   timeout: 30            # リクエストタイムアウト（秒）

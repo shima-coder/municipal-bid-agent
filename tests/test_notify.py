@@ -145,6 +145,30 @@ class TestFormatSummaryMessage:
         msg = notifier_no_webhook.format_summary_message({})
         assert '対象自治体: 0件' in msg
 
+    def test_ai_suppressed_count_appears_when_positive(self, notifier_no_webhook):
+        stats = {
+            'total_municipalities': 50,
+            'success_count': 48,
+            'failure_count': 2,
+            'total_new_items': 30,
+            'notify_count': 5,
+            'ai_suppressed_count': 3,
+        }
+        msg = notifier_no_webhook.format_summary_message(stats)
+        assert '🤖 AI判定 skip 高信頼で個別通知抑制: 3件' in msg
+
+    def test_ai_suppressed_count_omitted_when_zero(self, notifier_no_webhook):
+        stats = {
+            'total_municipalities': 50,
+            'success_count': 50,
+            'failure_count': 0,
+            'total_new_items': 10,
+            'notify_count': 5,
+            'ai_suppressed_count': 0,
+        }
+        msg = notifier_no_webhook.format_summary_message(stats)
+        assert '抑制' not in msg
+
 
 # --- TestSend ---
 

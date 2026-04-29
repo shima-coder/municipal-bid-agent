@@ -265,10 +265,34 @@ def run(args, config):
         logger.info("--- 通知開始 ---")
         notifier = SlackNotifier(config)
 
+        # 高信頼度 skip 判定の案件は個別通知を抑制 (config.notification.suppress_skip_above_confidence)
+        suppress_threshold = (config.get('notification', {}) or {}).get(
+            'suppress_skip_above_confidence'
+        )
+        suppressed_count = 0
+
         # 個別案件通知
         for bid_dict, score, matched, judgment in judged_targets:
+            should_suppress = (
+                suppress_threshold is not None
+                and judgment is not None
+                and not judgment.is_empty
+                and judgment.verdict == 'skip'
+                and judgment.confidence >= int(suppress_threshold)
+            )
+            if should_suppress:
+                suppressed_count += 1
+                update_bid_notified(conn, bid_dict['id'])  # 通知済み扱いにして再判定を防ぐ
+                logger.info(
+                    f"通知抑制 (skip conf={judgment.confidence}): "
+                    f"{(bid_dict.get('title') or '')[:50]}"
+                )
+                continue
             notifier.notify_bid(bid_dict, score, matched, judgment)
             update_bid_notified(conn, bid_dict['id'])
+
+        if suppressed_count > 0:
+            logger.info(f"AI判定 skip 高信頼で {suppressed_count} 件の個別通知を抑制")
 
         # 日次サマリ通知
         total_municipalities = 0
@@ -290,6 +314,7 @@ def run(args, config):
             'failure_count': failure_count,
             'total_new_items': total_new,
             'notify_count': len(notify_targets),
+            'ai_suppressed_count': suppressed_count,
         }
         notifier.notify_summary(summary_stats)
 

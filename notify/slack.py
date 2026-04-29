@@ -97,6 +97,7 @@ class SlackNotifier:
                 - failure_count: int
                 - total_new_items: int
                 - notify_count: int
+                - ai_suppressed_count: int (任意)
 
         Returns:
             str: formatted summary message
@@ -107,6 +108,7 @@ class SlackNotifier:
         failure = stats.get('failure_count', 0) or 0
         new_items = stats.get('total_new_items', 0) or 0
         notify_count = stats.get('notify_count', 0) or 0
+        ai_suppressed = stats.get('ai_suppressed_count', 0) or 0
 
         lines = [
             f"📊 スクレイピング完了 ({now})",
@@ -115,6 +117,10 @@ class SlackNotifier:
             f"取得成功: {success}件 / 失敗: {failure}件",
             f"新規案件: {new_items}件（うち通知対象: {notify_count}件）",
         ]
+        if ai_suppressed > 0:
+            lines.append(
+                f"🤖 AI判定 skip 高信頼で個別通知抑制: {ai_suppressed}件"
+            )
         return '\n'.join(lines)
 
     def send(self, message):
