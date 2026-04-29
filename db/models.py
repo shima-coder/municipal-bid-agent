@@ -50,6 +50,24 @@ CREATE TABLE IF NOT EXISTS scrape_logs (
     new_items INTEGER DEFAULT 0,
     scraped_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS judgments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    bid_id INTEGER NOT NULL,
+    model TEXT,
+    verdict TEXT NOT NULL,
+    confidence INTEGER DEFAULT 0,
+    reason TEXT,
+    estimated_effort TEXT,
+    concerns TEXT,
+    tool_calls INTEGER DEFAULT 0,
+    judged_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    outcome TEXT,
+    outcome_at DATETIME,
+    outcome_note TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_judgments_bid_id ON judgments(bid_id);
+CREATE INDEX IF NOT EXISTS idx_judgments_outcome ON judgments(outcome);
 """
 
 

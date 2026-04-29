@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import requests
 
 from db.models import get_connection, init_db
-from db.store import import_municipalities_from_json
+from db.store import import_municipalities_from_json, insert_judgment
 from judge.llm import BidJudge
 from judge.tools import JudgeToolExecutor
 from notify.slack import SlackNotifier
@@ -36,6 +36,10 @@ def main():
     parser.add_argument(
         "--web-search", action="store_true",
         help="Anthropic web_search server tool を有効化 ($10/1000検索)",
+    )
+    parser.add_argument(
+        "--persist", action="store_true",
+        help="判定結果を judgments テーブルに保存する (フィードバック付与用)",
     )
     args = parser.parse_args()
 
@@ -108,9 +112,16 @@ def main():
 
         judgment = judge.judge(bid, matched, executor=executor)
 
+        if args.persist and not judgment.is_empty:
+            try:
+                jid = insert_judgment(conn, bid["id"], judgment, model=judge.model)
+                logger.info(f"  → judgments.id={jid} に保存 (bid_id={bid['id']})")
+            except Exception as e:
+                logger.warning(f"  → 永続化失敗: {e}")
+
         print()
         print(notifier.format_bid_message(bid, bid["filter_score"], matched, judgment))
-        print(f"\n  [meta] tool_calls={judgment.tool_calls}")
+        print(f"\n  [meta] bid_id={bid['id']}, tool_calls={judgment.tool_calls}")
 
     conn.close()
     print("\n" + "=" * 70)

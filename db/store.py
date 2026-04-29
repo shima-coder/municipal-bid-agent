@@ -177,3 +177,137 @@ def get_scrape_summary(conn, date=None):
         WHERE DATE(scraped_at) = ?
     """, (date,)).fetchone()
     return row
+
+
+# --- judgments (AI判定ログとフィードバック) ---
+
+def insert_judgment(conn, bid_id, judgment, model=None):
+    """LLM判定結果を判定ログテーブルに保存する。
+
+    Args:
+        bid_id: 案件ID
+        judgment: BidJudgment dataclass instance
+        model: 使用モデル名 (例: claude-haiku-4-5)
+
+    Returns:
+        int: 挿入された judgment の id
+    """
+    concerns_str = json.dumps(
+        list(judgment.concerns) if judgment.concerns else [],
+        ensure_ascii=False,
+    )
+    cur = conn.execute(
+        """
+        INSERT INTO judgments (
+            bid_id, model, verdict, confidence, reason,
+            estimated_effort, concerns, tool_calls
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            bid_id,
+            model,
+            judgment.verdict,
+            judgment.confidence,
+            judgment.reason,
+            judgment.estimated_effort,
+            concerns_str,
+            judgment.tool_calls,
+        ),
+    )
+    conn.commit()
+    return cur.lastrowid
+
+
+def record_judgment_outcome(conn, bid_id, outcome, note=None):
+    """指定 bid_id の最新判定に outcome を記録する。
+
+    outcome: applied / skipped / won / lost
+    複数判定がある場合は最新 (judged_at DESC) のものに記録。
+
+    Returns:
+        int: 更新された行数 (該当判定がなければ 0)
+    """
+    valid_outcomes = ("applied", "skipped", "won", "lost")
+    if outcome not in valid_outcomes:
+        raise ValueError(
+            f"Invalid outcome: {outcome}. Must be one of {valid_outcomes}"
+        )
+
+    row = conn.execute(
+        "SELECT id FROM judgments WHERE bid_id = ? "
+        "ORDER BY judged_at DESC, id DESC LIMIT 1",
+        (bid_id,),
+    ).fetchone()
+    if not row:
+        return 0
+
+    conn.execute(
+        """
+        UPDATE judgments
+        SET outcome = ?, outcome_at = ?, outcome_note = ?
+        WHERE id = ?
+        """,
+        (outcome, datetime.now().isoformat(), note, row["id"]),
+    )
+    conn.commit()
+    return 1
+
+
+def get_judgments_by_bid(conn, bid_id):
+    """指定 bid_id の判定履歴 (古い順) を取得する。"""
+    return conn.execute(
+        "SELECT * FROM judgments WHERE bid_id = ? ORDER BY judged_at ASC, id ASC",
+        (bid_id,),
+    ).fetchall()
+
+
+def get_judgment_stats(conn):
+    """判定ログの集計を返す。
+
+    Returns:
+        dict with:
+            total: 全判定数
+            by_verdict: {'apply': N, 'skip': N, 'uncertain': N}
+            with_outcome: 結果フィードバックがある判定数
+            agreement: dict of (verdict, outcome) -> count
+            accuracy: applied vs apply, skipped vs skip の単純精度 (None if outcome 0件)
+    """
+    total = conn.execute("SELECT COUNT(*) FROM judgments").fetchone()[0]
+
+    by_verdict_rows = conn.execute(
+        "SELECT verdict, COUNT(*) FROM judgments GROUP BY verdict"
+    ).fetchall()
+    by_verdict = {row[0]: row[1] for row in by_verdict_rows}
+
+    with_outcome = conn.execute(
+        "SELECT COUNT(*) FROM judgments WHERE outcome IS NOT NULL"
+    ).fetchone()[0]
+
+    agreement_rows = conn.execute(
+        """
+        SELECT verdict, outcome, COUNT(*) as n
+        FROM judgments
+        WHERE outcome IS NOT NULL
+        GROUP BY verdict, outcome
+        """
+    ).fetchall()
+    agreement = {(row[0], row[1]): row[2] for row in agreement_rows}
+
+    # 単純精度: apply→applied/won, skip→skipped を正解とみなす
+    accuracy = None
+    if with_outcome > 0:
+        correct = 0
+        for (verdict, outcome), n in agreement.items():
+            if verdict == "apply" and outcome in ("applied", "won"):
+                correct += n
+            elif verdict == "skip" and outcome == "skipped":
+                correct += n
+        accuracy = correct / with_outcome
+
+    return {
+        "total": total,
+        "by_verdict": by_verdict,
+        "with_outcome": with_outcome,
+        "agreement": agreement,
+        "accuracy": accuracy,
+    }

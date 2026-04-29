@@ -11,8 +11,11 @@ from db.models import init_db, get_connection
 from db.store import (
     get_all_bids,
     get_bids_by_status,
+    get_judgment_stats,
     import_municipalities_from_json,
+    insert_judgment,
     get_municipalities,
+    record_judgment_outcome,
     update_bid_notified,
 )
 from filter.matcher import BidMatcher
@@ -68,6 +71,14 @@ def parse_args():
     parser.add_argument(
         '--kkj-only', action='store_true',
         help='官公需ポータルのみスクレイピング',
+    )
+    parser.add_argument(
+        '--feedback', nargs='+', metavar='ARGS',
+        help='AI判定にフィードバック記録: --feedback BID_ID applied|skipped|won|lost ["note"]',
+    )
+    parser.add_argument(
+        '--stats', action='store_true',
+        help='AI判定ログのサマリ (verdict分布 / フィードバック付き件数 / 精度) を表示',
     )
     return parser.parse_args()
 
@@ -229,6 +240,13 @@ def run(args, config):
                 )
         executor = JudgeToolExecutor(http_session=http_session, db_conn=conn)
         judged_targets = judge.judge_batch(notify_targets, executor=executor)
+        # 判定結果を judgments テーブルに永続化 (フィードバック付与用)
+        for bid_dict, _, _, judgment in judged_targets:
+            if judgment is not None and not judgment.is_empty:
+                try:
+                    insert_judgment(conn, bid_dict['id'], judgment, model=judge.model)
+                except Exception as e:
+                    logger.warning(f"判定ログ保存失敗 (bid_id={bid_dict.get('id')}): {e}")
         apply_count = sum(1 for *_, j in judged_targets if j.verdict == 'apply')
         skip_count = sum(1 for *_, j in judged_targets if j.verdict == 'skip')
         total_tool_calls = sum(j.tool_calls for *_, j in judged_targets if j is not None)
@@ -279,10 +297,85 @@ def run(args, config):
     logger.info("=== スクレイピング完了 ===")
 
 
+def record_feedback(args_list):
+    """--feedback BID_ID outcome [note] を処理する"""
+    logger = logging.getLogger(__name__)
+    if len(args_list) < 2:
+        print("Usage: --feedback BID_ID outcome [note]", file=sys.stderr)
+        print("  outcome: applied | skipped | won | lost", file=sys.stderr)
+        sys.exit(2)
+    try:
+        bid_id = int(args_list[0])
+    except ValueError:
+        print(f"Error: BID_ID must be integer, got '{args_list[0]}'", file=sys.stderr)
+        sys.exit(2)
+    outcome = args_list[1]
+    note = ' '.join(args_list[2:]) if len(args_list) > 2 else None
+
+    init_db()
+    conn = get_connection()
+    try:
+        n = record_judgment_outcome(conn, bid_id, outcome, note)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        conn.close()
+        sys.exit(2)
+    if n == 0:
+        print(f"No judgment found for bid_id={bid_id}", file=sys.stderr)
+        sys.exit(1)
+    logger.info(f"Recorded outcome={outcome} for bid_id={bid_id}")
+    print(f"OK: bid_id={bid_id} -> {outcome}" + (f" ({note})" if note else ""))
+    conn.close()
+
+
+def show_stats():
+    """--stats: 判定ログのサマリを表示する"""
+    init_db()
+    conn = get_connection()
+    s = get_judgment_stats(conn)
+    conn.close()
+
+    print("=" * 60)
+    print(" AI判定ログ サマリ")
+    print("=" * 60)
+    print(f" 総判定数:           {s['total']}")
+    print(f" verdict内訳:")
+    for v in ('apply', 'skip', 'uncertain'):
+        print(f"   {v:10s}: {s['by_verdict'].get(v, 0)}")
+    print(f" フィードバック済:    {s['with_outcome']}")
+
+    if s['with_outcome'] > 0:
+        print(f"\n verdict × outcome 集計:")
+        outcomes = ('applied', 'skipped', 'won', 'lost')
+        verdicts = ('apply', 'skip', 'uncertain')
+        header = '   ' + ''.join(f'{o:>10s}' for o in outcomes)
+        print(header)
+        for v in verdicts:
+            row = f'   {v:8s}'
+            for o in outcomes:
+                row += f"{s['agreement'].get((v, o), 0):>10d}"
+            print(row)
+        if s['accuracy'] is not None:
+            print(f"\n 単純精度:           {s['accuracy']:.1%}")
+            print("   (apply→applied/won, skip→skipped を正解とみなす)")
+    else:
+        print(" → フィードバックがまだ記録されていません")
+        print("   --feedback BID_ID applied|skipped|won|lost で記録してください")
+    print("=" * 60)
+
+
 def main():
     args = parse_args()
     setup_logging()
     config = load_config()
+
+    if args.feedback:
+        record_feedback(args.feedback)
+        return
+
+    if args.stats:
+        show_stats()
+        return
 
     if args.check_urls:
         check_urls(config)
