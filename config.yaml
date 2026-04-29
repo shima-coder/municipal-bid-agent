@@ -50,3 +50,6 @@ llm:
   max_judgments_per_run: 10            # 1回の実行でLLM判定する案件数の上限（コスト制御）
   max_tool_iterations: 4               # use_tools=true 時、ツール使用ループの最大回数
   max_tokens: 1024
+
+  enable_web_search: false             # true で Anthropic web_search server tool を追加 ($10/1000検索)
+  web_search_max_uses: 2               # 1回の判定でweb_searchが呼べる最大回数

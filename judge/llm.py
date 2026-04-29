@@ -42,9 +42,11 @@ SYSTEM_PROMPT = """\
 
 # ツールの使い方
 - 公告タイトルとマッチキーワードだけで判断材料が十分なら、ツールを呼ばずに判定してよい (低コスト優先)
-- 「業務範囲が曖昧」「予算規模を知りたい」「要件を確認したい」と感じた時のみ `fetch_bid_detail` で詳細ページを取得
+- 「業務範囲が曖昧」「要件を確認したい」と感じた時のみ `fetch_bid_detail` で詳細ページを取得
 - 同じ自治体の過去傾向を知りたい時のみ `search_past_bids` を使う
-- ツール呼び出しは最大3回まで。それ以上必要なら手元情報で判断する
+- 「市場相場が分からない」「自治体の予算規模感を知りたい」「類似事業の事例が欲しい」時のみ `web_search` を使う
+  (web_searchは1案件あたり最大1回が目安。コスト高め)
+- 各ツール呼び出しは最大3回まで。それ以上必要なら手元情報で判断する
 
 # 最終出力 (JSON、コードブロック不要)
 {
@@ -108,6 +110,8 @@ class BidJudge:
         self.max_tokens = int(llm_config.get("max_tokens", 1024))
         self.use_tools = bool(llm_config.get("use_tools", True))
         self.max_tool_iterations = int(llm_config.get("max_tool_iterations", 4))
+        self.enable_web_search = bool(llm_config.get("enable_web_search", False))
+        self.web_search_max_uses = int(llm_config.get("web_search_max_uses", 2))
         self.api_key = os.environ.get("ANTHROPIC_API_KEY", "")
 
         self._client = None
@@ -207,13 +211,28 @@ class BidJudge:
 
     # --- internal: agentic tool-use loop ---
 
-    def _judge_with_tools(self, bid: dict, matched_keywords, executor) -> BidJudgment:
+    def _build_tools_list(self):
+        """Client-side tools + (optional) web_search server tool."""
         from judge.tools import TOOL_SCHEMAS
+        tools = list(TOOL_SCHEMAS)
+        if self.enable_web_search:
+            tools.append(
+                {
+                    "type": "web_search_20250305",
+                    "name": "web_search",
+                    "max_uses": self.web_search_max_uses,
+                }
+            )
+        return tools
+
+    def _judge_with_tools(self, bid: dict, matched_keywords, executor) -> BidJudgment:
+        tools = self._build_tools_list()
 
         messages = [
             {"role": "user", "content": _format_user_message(bid, matched_keywords)}
         ]
-        tool_calls = 0
+        tool_calls = 0  # client-side tool invocations
+        server_tool_calls = 0  # server-side (web_search) invocations
 
         for iteration in range(self.max_tool_iterations):
             try:
@@ -227,24 +246,34 @@ class BidJudge:
                             "cache_control": {"type": "ephemeral"},
                         }
                     ],
-                    tools=TOOL_SCHEMAS,
+                    tools=tools,
                     messages=messages,
                 )
             except Exception as e:
                 logger.error(f"LLM call failed (iteration {iteration}): {e}")
                 return BidJudgment.empty(f"LLM呼び出し失敗: {type(e).__name__}")
 
+            # Count server-side tool usage embedded in response
+            for block in response.content:
+                if getattr(block, "type", "") == "server_tool_use":
+                    server_tool_calls += 1
+
             if response.stop_reason == "end_turn":
                 text = "".join(b.text for b in response.content if b.type == "text")
                 judgment = self._parse(text)
-                judgment.tool_calls = tool_calls
+                judgment.tool_calls = tool_calls + server_tool_calls
                 return judgment
+
+            if response.stop_reason == "pause_turn":
+                # Server-side tool loop hit its iteration limit; resend to resume.
+                messages.append({"role": "assistant", "content": response.content})
+                continue
 
             if response.stop_reason == "tool_use":
                 messages.append({"role": "assistant", "content": response.content})
                 tool_results = []
                 for block in response.content:
-                    if block.type != "tool_use":
+                    if getattr(block, "type", "") != "tool_use":
                         continue
                     tool_calls += 1
                     logger.debug(
@@ -262,6 +291,10 @@ class BidJudge:
                             "content": result,
                         }
                     )
+                if not tool_results:
+                    # stop_reason=tool_use だが client tool が含まれていない
+                    # (server tool だけが呼ばれた場合) → そのまま続行
+                    continue
                 messages.append({"role": "user", "content": tool_results})
                 continue
 

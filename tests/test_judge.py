@@ -350,6 +350,80 @@ class TestJudgeWithToolUseLoop:
             assert result.tool_calls == 1
 
 
+class TestWebSearchIntegration:
+    """Web search server tool 連携のテスト。"""
+
+    def test_web_search_disabled_by_default(self, enabled_config_with_tools, monkeypatch):
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+        with patch("anthropic.Anthropic"):
+            judge = BidJudge(enabled_config_with_tools)
+            assert judge.enable_web_search is False
+            tools = judge._build_tools_list()
+            assert not any(t.get("type", "").startswith("web_search") for t in tools)
+
+    def test_web_search_appended_when_enabled(self, monkeypatch):
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+        config = {
+            "llm": {
+                "enabled": True,
+                "model": "claude-haiku-4-5",
+                "use_tools": True,
+                "enable_web_search": True,
+                "web_search_max_uses": 3,
+            }
+        }
+        with patch("anthropic.Anthropic"):
+            judge = BidJudge(config)
+            tools = judge._build_tools_list()
+            web_tool = next(
+                (t for t in tools if t.get("name") == "web_search"), None
+            )
+            assert web_tool is not None
+            assert web_tool["type"].startswith("web_search")
+            assert web_tool["max_uses"] == 3
+            # 既存の client tools も保持されている
+            assert any(t.get("name") == "fetch_bid_detail" for t in tools)
+
+    def test_pause_turn_continues_loop(self, sample_bid, monkeypatch):
+        """server tool が iteration limit に達して pause_turn が返ったら resend して継続。"""
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+        config = {
+            "llm": {
+                "enabled": True,
+                "model": "claude-haiku-4-5",
+                "use_tools": True,
+                "enable_web_search": True,
+                "max_tool_iterations": 3,
+            }
+        }
+
+        pause_response = MagicMock()
+        pause_response.stop_reason = "pause_turn"
+        # server_tool_use ブロックが入っている (これがカウント対象)
+        server_block = MagicMock()
+        server_block.type = "server_tool_use"
+        pause_response.content = [server_block]
+
+        end_response = MagicMock()
+        end_response.stop_reason = "end_turn"
+        text_block = MagicMock()
+        text_block.type = "text"
+        text_block.text = '{"verdict": "skip", "confidence": 60, "reason": "x"}'
+        end_response.content = [text_block]
+
+        with patch("anthropic.Anthropic") as mock_anthropic:
+            instance = mock_anthropic.return_value
+            instance.messages.create.side_effect = [pause_response, end_response]
+
+            judge = BidJudge(config)
+            result = judge.judge(sample_bid, ["データ分析"], executor=MagicMock())
+
+            assert result.verdict == "skip"
+            # server tool 使用が tool_calls にカウントされている
+            assert result.tool_calls >= 1
+            assert instance.messages.create.call_count == 2
+
+
 class TestJudgeToolExecutor:
     def test_unknown_tool_returns_error(self):
         from judge.tools import JudgeToolExecutor

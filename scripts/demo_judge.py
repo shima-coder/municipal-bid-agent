@@ -33,6 +33,10 @@ def main():
     parser.add_argument(
         "--no-tools", action="store_true", help="tool useを無効化 (1ショット判定)"
     )
+    parser.add_argument(
+        "--web-search", action="store_true",
+        help="Anthropic web_search server tool を有効化 ($10/1000検索)",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -50,6 +54,7 @@ def main():
     config.setdefault("llm", {})
     config["llm"]["enabled"] = True
     config["llm"]["use_tools"] = not args.no_tools
+    config["llm"]["enable_web_search"] = args.web_search
 
     init_db()
     conn = get_connection()
@@ -86,7 +91,10 @@ def main():
     executor = JudgeToolExecutor(http_session=http_session, db_conn=conn)
 
     print("=" * 70)
-    print(f" 🤖 AIエージェント判定デモ ({len(rows)}件、tool_use={judge.use_tools})")
+    print(
+        f" 🤖 AIエージェント判定デモ ({len(rows)}件、"
+        f"tool_use={judge.use_tools}、web_search={judge.enable_web_search})"
+    )
     print(f"    モデル: {judge.model}")
     print("=" * 70)
 
