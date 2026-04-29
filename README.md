@@ -1,5 +1,9 @@
 # Municipal Bid Agent — 自治体入札AIエージェント
 
+[![tests](https://github.com/shima-coder/municipal-bid-agent/actions/workflows/test.yml/badge.svg)](https://github.com/shima-coder/municipal-bid-agent/actions/workflows/test.yml)
+[![python](https://img.shields.io/badge/python-3.12+-blue)](https://www.python.org/)
+[![claude](https://img.shields.io/badge/Claude-Haiku%204.5-orange)](https://www.anthropic.com/)
+
 四国55町村と官公需ポータル(四国 + 中国地方9県)から入札・プロポーザル公告を毎日収集し、**自社が応募できる案件かどうかをLLMが判定して** Slackに通知する常時稼働エージェント。
 
 NJSS等の有料サービス（年間数万〜十数万円）の代替を、自前のスクレイピング + Claude で構築したもの。
