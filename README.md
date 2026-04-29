@@ -139,6 +139,19 @@ python -m pytest tests/ -v
 
 精度が下がってきたら判定プロンプトやスコアリング閾値を見直す、というループを回せる。
 
+### 評価ハーネス (`scripts/eval.py`)
+
+`--feedback` で蓄積した outcome 付き判定をテストデータとみなして、
+現プロンプトを再評価できる:
+
+```bash
+python scripts/eval.py             # offline: 保存済み judgment + outcome から精度計算
+python scripts/eval.py --rerun     # 再判定: 現プロンプトで再評価して、旧→新の精度差分を出力
+python scripts/eval.py --rerun --model claude-sonnet-4-6  # モデルアップグレード比較
+```
+
+例: 「プロンプト変えてみたが精度上がる？」を判定するための AB テスト用具。
+
 ## デーモン化 (毎日自動実行 — macOS)
 
 launchd ジョブを `scripts/install_launchd.sh` でインストールできる:
