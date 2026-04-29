@@ -4,9 +4,12 @@ Exposed to Claude as tool definitions; executed by `JudgeToolExecutor`.
 """
 
 import logging
+import warnings
 from typing import Optional
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
+
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 logger = logging.getLogger(__name__)
 
