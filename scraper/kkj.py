@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 KKJ_SEARCH_URL = 'https://www.kkj.go.jp/s/'
 KKJ_BASE_URL = 'https://www.kkj.go.jp'
 
-# 四国4県の都道府県コード
+# 四国4県の都道府県コード (デフォルト)。config.yamlの scraper.kkj_prefectures で上書き可
 SHIKOKU_PREFECTURES = {
     '36': '徳島県',
     '37': '香川県',
@@ -23,8 +23,12 @@ SHIKOKU_PREFECTURES = {
     '39': '高知県',
 }
 
+# 拡張用の参考: 中国・九州地方 (config.yaml に追記すれば対象化)
+# '31': 鳥取, '32': 島根, '33': 岡山, '34': 広島, '35': 山口
+# '40': 福岡, '41': 佐賀, '42': 長崎, '43': 熊本, '44': 大分, '45': 宮崎, '46': 鹿児島, '47': 沖縄
 
-def parse_kkj_results(html, base_url=KKJ_BASE_URL):
+
+def parse_kkj_results(html, base_url=KKJ_BASE_URL, prefecture_names=None):
     """官公需ポータルの検索結果HTMLから案件情報を抽出する。
 
     Returns:
@@ -97,7 +101,9 @@ def parse_kkj_results(html, base_url=KKJ_BASE_URL):
         # 機関名を抽出（都道府県名や市町村名）
         organization = ''
         # テキストの先頭付近にある機関名を探す
-        for pref_name in SHIKOKU_PREFECTURES.values():
+        # prefecture_names が None の時は SHIKOKU_PREFECTURES を使う (後方互換)
+        target_prefs = prefecture_names if prefecture_names else SHIKOKU_PREFECTURES.values()
+        for pref_name in target_prefs:
             if pref_name in li_text:
                 # 都道府県名の後に続く市区町村名も取得
                 org_match = re.search(
@@ -142,6 +148,14 @@ class KKJScraper(BaseScraper):
             from scraper.base import load_config
             config = load_config()
         self.config = config
+        # 対象都道府県 (config優先、なければ SHIKOKU_PREFECTURES)
+        scraper_cfg = config.get('scraper', {}) or {}
+        kkj_prefs = scraper_cfg.get('kkj_prefectures')
+        if kkj_prefs:
+            # YAMLでは数値codeが文字列化されないことがあるので str() を保証
+            self.prefectures = {str(k): v for k, v in kkj_prefs.items()}
+        else:
+            self.prefectures = dict(SHIKOKU_PREFECTURES)
 
     def _get_search_keywords(self):
         """config.yamlのinclude_keywordsからフラットなキーワードリストを取得する"""
@@ -157,7 +171,7 @@ class KKJScraper(BaseScraper):
         params = {
             'U': '0-all',
             'S': keyword,
-            'pr': list(SHIKOKU_PREFECTURES.keys()),
+            'pr': list(self.prefectures.keys()),
             'rc': '50',  # 1ページ最大50件
         }
         return params
@@ -185,7 +199,7 @@ class KKJScraper(BaseScraper):
             return {'items_found': 0, 'new_items': 0}
 
         hit_count = extract_hit_count(html)
-        items = parse_kkj_results(html)
+        items = parse_kkj_results(html, prefecture_names=list(self.prefectures.values()))
         new_count = 0
 
         for item in items:

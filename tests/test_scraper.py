@@ -865,6 +865,32 @@ class TestKKJScraper:
         assert '38' in params['pr']
         assert '39' in params['pr']
 
+    def test_default_prefectures_fallback_to_shikoku(self, kkj_config):
+        """config に kkj_prefectures が無ければ SHIKOKU が使われる"""
+        scraper = KKJScraper(config=kkj_config)
+        assert set(scraper.prefectures.keys()) == {'36', '37', '38', '39'}
+
+    def test_prefectures_overridden_by_config(self):
+        """config.scraper.kkj_prefectures で対象を上書きできる"""
+        config = {
+            'scraper': {
+                'user_agent': 'TestScraper/1.0',
+                'request_interval': 0,
+                'timeout': 5,
+                'max_retries': 2,
+                'kkj_prefectures': {
+                    '31': '鳥取県',
+                    '32': '島根県',
+                    '36': '徳島県',
+                },
+            },
+            'filter': {'include_keywords': {}},
+        }
+        scraper = KKJScraper(config=config)
+        params = scraper._build_search_params('test')
+        assert set(params['pr']) == {'31', '32', '36'}
+        assert '37' not in params['pr']  # 香川は対象外
+
     @patch.object(BaseScraper, 'check_robots_txt', return_value=True)
     def test_search_keyword(self, mock_robots, kkj_scraper, db_conn):
         """1キーワードの検索で新規案件がDBに保存される"""

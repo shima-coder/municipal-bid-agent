@@ -43,6 +43,20 @@ scraper:
   max_retries: 3         # リトライ回数
   user_agent: "MunicipalBidScraper/1.0"
 
+  # 官公需ポータルでの検索対象都道府県 (コード: 都道府県名)
+  # 自治体HPスクレイピングの対象とは別。kkjは中央ポータルなので追加コスト軽い。
+  # 四国 + 中国地方を対象 (Phase 2 拡張)
+  kkj_prefectures:
+    "31": "鳥取県"
+    "32": "島根県"
+    "33": "岡山県"
+    "34": "広島県"
+    "35": "山口県"
+    "36": "徳島県"
+    "37": "香川県"
+    "38": "愛媛県"
+    "39": "高知県"
+
 llm:
   enabled: false                       # true にすると LLM 判定が有効化（要 ANTHROPIC_API_KEY）
   model: "claude-haiku-4-5"            # 判定に使うモデル（Haikuで十分。alias使用、date suffix不要）
