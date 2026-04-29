@@ -135,6 +135,34 @@ python -m pytest tests/ -v
 
 精度が下がってきたら判定プロンプトやスコアリング閾値を見直す、というループを回せる。
 
+## デーモン化 (毎日自動実行 — macOS)
+
+launchd ジョブを `scripts/install_launchd.sh` でインストールできる:
+
+```bash
+# 環境変数を .env にまとめておく (起動時に自動読み込み)
+cp .env.example .env
+# ANTHROPIC_API_KEY を編集
+
+# 毎日 08:00 に実行する launchd ジョブを登録
+./scripts/install_launchd.sh install        # デフォルト 08:00
+./scripts/install_launchd.sh install 07:30  # 時刻指定
+
+# 状態確認 / 手動実行 / アンインストール
+./scripts/install_launchd.sh status
+./scripts/install_launchd.sh run-now        # テスト用に今すぐ1回実行
+./scripts/install_launchd.sh uninstall
+```
+
+ログ:
+- `logs/daily-YYYY-MM-DD.log` — 各日の実行ログ
+- `logs/launchd.{out,err}` — launchd 自体の stdout/stderr
+
+Linuxの場合は `crontab -e` に下記を追加:
+```
+0 8 * * * /path/to/municipal-bid-agent/scripts/run_daily.sh
+```
+
 ## アーキテクチャ
 
 | Layer | モジュール | 役割 |
