@@ -3,6 +3,7 @@
 Exposed to Claude as tool definitions; executed by `JudgeToolExecutor`.
 """
 
+import io
 import logging
 import warnings
 from typing import Optional
@@ -10,6 +11,9 @@ from typing import Optional
 from bs4 import BeautifulSoup, XMLParsedAsHTMLWarning
 
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+
+# PDF max size — guard against accidental download of huge files
+PDF_MAX_BYTES = 10 * 1024 * 1024  # 10MB
 
 logger = logging.getLogger(__name__)
 
@@ -19,10 +23,11 @@ TOOL_SCHEMAS = [
     {
         "name": "fetch_bid_detail",
         "description": (
-            "案件詳細ページのHTMLを取得し、本文テキストを返す。"
+            "案件詳細ページの本文テキストを取得する。"
+            "HTMLページとPDFファイル(直リンクおよびContent-Type判定)の両方に対応。"
             "公告概要だけでは応募可否を判断できない時に使う"
             "(要件・想定予算・締切などを確認したい場合)。"
-            "PDF直リンクの場合はその旨を返す。fetch失敗時はエラー文字列を返す。"
+            "fetch失敗・PDF抽出失敗時はエラー文字列を返す。"
             "本文は最大5000文字に切り詰める。"
         ),
         "input_schema": {
@@ -30,7 +35,7 @@ TOOL_SCHEMAS = [
             "properties": {
                 "url": {
                     "type": "string",
-                    "description": "案件詳細ページの絶対URL",
+                    "description": "案件詳細ページの絶対URL (HTML or PDF)",
                 }
             },
             "required": ["url"],
@@ -96,9 +101,6 @@ class JudgeToolExecutor:
         if not url:
             return "Error: URL not provided"
 
-        if url.lower().endswith(".pdf"):
-            return f"PDF直リンク: {url} (このツールではPDF解析未対応。タイトルとURLからの判断に留めてください)"
-
         if self.http_session is None:
             return "Error: HTTP session not available in this context"
 
@@ -113,6 +115,19 @@ class JudgeToolExecutor:
         if resp.status_code != 200:
             return f"Error: HTTP {resp.status_code} for {url}"
 
+        # PDFかどうかを判定 (URL末尾 or Content-Type)
+        content_type = (resp.headers.get("Content-Type") or "").lower()
+        is_pdf = (
+            url.lower().endswith(".pdf")
+            or "application/pdf" in content_type
+        )
+
+        if is_pdf:
+            return self._extract_pdf_text(resp.content, url)
+
+        return self._extract_html_text(resp)
+
+    def _extract_html_text(self, resp) -> str:
         # Encoding fallback (Shift_JIS / EUC-JP の古いサイト対策)
         if resp.encoding == "ISO-8859-1" or not resp.encoding:
             try:
@@ -139,6 +154,57 @@ class JudgeToolExecutor:
             text = text[: self.max_fetch_chars] + f"\n\n... (truncated at {self.max_fetch_chars} chars)"
 
         return text
+
+    def _extract_pdf_text(self, pdf_bytes: bytes, url: str) -> str:
+        """PDFバイト列からテキスト抽出。サイズ制限・抽出失敗・空PDFを防御的に扱う。"""
+        if not pdf_bytes:
+            return f"Error: PDF空 ({url})"
+
+        if len(pdf_bytes) > PDF_MAX_BYTES:
+            return (
+                f"Error: PDFサイズ制限超過 "
+                f"({len(pdf_bytes)} > {PDF_MAX_BYTES} bytes): {url}"
+            )
+
+        try:
+            from pypdf import PdfReader
+        except ImportError:
+            return "Error: pypdf未インストール (pip install pypdf)"
+
+        try:
+            reader = PdfReader(io.BytesIO(pdf_bytes))
+            pages_text = []
+            for page in reader.pages:
+                try:
+                    page_text = page.extract_text() or ""
+                except Exception as e:
+                    logger.debug(f"PDF page extract failed: {e}")
+                    continue
+                if page_text.strip():
+                    pages_text.append(page_text)
+                # 早期終了: 既に max を超えていたら追加処理不要
+                if sum(len(t) for t in pages_text) > self.max_fetch_chars * 2:
+                    break
+        except Exception as e:
+            return f"Error: PDF読み込み失敗 ({type(e).__name__}: {e})"
+
+        if not pages_text:
+            return (
+                f"PDF: {url} - テキスト抽出不可 "
+                f"(スキャン画像PDFまたは本文なしの可能性)"
+            )
+
+        text = "\n\n".join(pages_text)
+        # PDFは制御文字が混じることがあるので軽くクリーンアップ
+        text = "".join(c for c in text if c == "\n" or c == "\t" or ord(c) >= 0x20)
+
+        if len(text) > self.max_fetch_chars:
+            text = (
+                text[: self.max_fetch_chars]
+                + f"\n\n... (truncated at {self.max_fetch_chars} chars)"
+            )
+
+        return f"[PDFから抽出]\n{text}"
 
     def _search_past_bids(self, municipality_name: str, limit) -> str:
         if not municipality_name:

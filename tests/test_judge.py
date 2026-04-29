@@ -432,13 +432,13 @@ class TestJudgeToolExecutor:
         assert "Error" in result
         assert "nonexistent_tool" in result
 
-    def test_fetch_pdf_link_returns_message(self):
+    def test_fetch_pdf_link_no_session_returns_error(self):
         from judge.tools import JudgeToolExecutor
         executor = JudgeToolExecutor()
         result = executor.execute(
             "fetch_bid_detail", {"url": "https://example.jp/doc.pdf"}
         )
-        assert "PDF" in result
+        assert "Error" in result
 
     def test_fetch_no_session_returns_error(self):
         from judge.tools import JudgeToolExecutor
@@ -457,6 +457,96 @@ class TestJudgeToolExecutor:
         )
         assert "Error" in result
         assert "DB" in result
+
+    def test_pdf_fetch_with_mock_session(self):
+        """実PDFバイト列を作って fetch → extract をend-to-endでテスト。"""
+        from judge.tools import JudgeToolExecutor
+        from pypdf import PdfWriter
+
+        # in-memory に小さなPDFを作る
+        import io
+        writer = PdfWriter()
+        writer.add_blank_page(width=200, height=200)
+        # pypdfはテキスト追加が直接できないので、この空白PDFでは抽出不可になる
+        # 抽出不可ケース (スキャンPDF的な) のテストとして使う
+        buf = io.BytesIO()
+        writer.write(buf)
+        pdf_bytes = buf.getvalue()
+
+        mock_session = MagicMock()
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = pdf_bytes
+        mock_response.headers = {"Content-Type": "application/pdf"}
+        mock_session.get.return_value = mock_response
+
+        executor = JudgeToolExecutor(http_session=mock_session)
+        result = executor.execute(
+            "fetch_bid_detail", {"url": "https://example.jp/doc.pdf"}
+        )
+        # 空白PDFなのでテキスト抽出不可メッセージ
+        assert "PDF" in result
+        assert "抽出不可" in result or "テキスト" in result
+
+    def test_pdf_size_limit(self):
+        """PDF_MAX_BYTES を超える場合はエラーで止まる。"""
+        from judge.tools import JudgeToolExecutor, PDF_MAX_BYTES
+
+        mock_session = MagicMock()
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = b"x" * (PDF_MAX_BYTES + 1)
+        mock_response.headers = {"Content-Type": "application/pdf"}
+        mock_session.get.return_value = mock_response
+
+        executor = JudgeToolExecutor(http_session=mock_session)
+        result = executor.execute(
+            "fetch_bid_detail", {"url": "https://example.jp/big.pdf"}
+        )
+        assert "Error" in result
+        assert "サイズ" in result
+
+    def test_pdf_content_type_detection(self):
+        """URL末尾が.pdfでなくても Content-Type で PDF と判定される。"""
+        from judge.tools import JudgeToolExecutor
+
+        mock_session = MagicMock()
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        # 不正なPDFバイトでも、PDF経路に入って pypdf で失敗する → Error
+        mock_response.content = b"%PDF-1.4\nbroken"
+        mock_response.headers = {"Content-Type": "application/pdf; charset=binary"}
+        mock_session.get.return_value = mock_response
+
+        executor = JudgeToolExecutor(http_session=mock_session)
+        result = executor.execute(
+            "fetch_bid_detail",
+            {"url": "https://example.jp/file?id=42"},  # .pdf なし
+        )
+        # PDF経路に入った (HTML扱いではない) ので "PDF" or "Error: PDF" が結果に含まれる
+        assert "Error" in result or "PDF" in result
+
+    def test_html_still_works_when_not_pdf(self):
+        """非PDF (HTML) の場合は従来通りBeautifulSoupで抽出される。"""
+        from judge.tools import JudgeToolExecutor
+
+        html = b"<html><body><h1>Test</h1><p>Hello world</p></body></html>"
+        mock_session = MagicMock()
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = html
+        mock_response.text = html.decode("utf-8")
+        mock_response.encoding = "utf-8"
+        mock_response.headers = {"Content-Type": "text/html; charset=utf-8"}
+        mock_session.get.return_value = mock_response
+
+        executor = JudgeToolExecutor(http_session=mock_session)
+        result = executor.execute(
+            "fetch_bid_detail", {"url": "https://example.jp/page.html"}
+        )
+        assert "Test" in result
+        assert "Hello world" in result
+        assert "[PDFから抽出]" not in result
 
     def test_search_past_bids_with_mock_db(self):
         from judge.tools import JudgeToolExecutor
